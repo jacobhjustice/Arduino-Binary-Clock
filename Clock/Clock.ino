@@ -1,13 +1,18 @@
 #include <RTClib.h>
 #include <Wire.h>
-#define MINUTE_PINS_COUNT 6
-#define HOUR_PINS_COUNT 4
+const unsigned int MINUTE_PINS_COUNT = 6;
+const unsigned int HOUR_PINS_COUNT = 4;
+const unsigned int MINUTE_PIN_START = 2;
+const unsigned int HOUR_PIN_START= 8;
+const unsigned int PM_PIN = 13;
+const unsigned int MAX_PIN = 13;
 
 bool _isEnabled = false;
 RTC_DS3231 rtc;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.println("Hello World!");
   if (! rtc.begin()) 
   {
@@ -48,7 +53,34 @@ void loop() {
     hour_pins[i] = minutes % 2;
     hours /= 2;
   }
-  Serial.println(minute_pins[0]);
+  //for(int i = 0; i < 6; i++)
+ // {
+  //    Serial.println(minute_pins[i]);
+
+  //}
+  clearPins();
+  setPins(isPM, hour_pins, minute_pins);
+    Serial.println("____");
+
+
   delay(1000);
   
+}
+void clearPins()
+{
+  for(int i = 1; i <= MAX_PIN; i++)
+  {
+    digitalWrite(i, LOW);
+  }
+}
+
+void setPins(bool isPM, bool hour_pins[], bool minute_pins[]){
+  for(int i = 0; i < MINUTE_PINS_COUNT; i++)
+  {
+    if(minute_pins[i])
+    {
+      Serial.println(MINUTE_PIN_START+i);
+      digitalWrite(MINUTE_PIN_START+i, HIGH);
+    }
+  }
 }
