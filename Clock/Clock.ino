@@ -17,12 +17,19 @@ void setup() {
   if (! rtc.begin()) 
   {
     Serial.println("RTC Not found");
+    while(1);
+  }
+  else if (rtc.lostPower()) 
+  {
+    Serial.println("RTC Lost power");
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    _isEnabled = true;
   }
   else 
   {
     _isEnabled = true;
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
+
 }
 
 void loop() {
@@ -32,6 +39,7 @@ void loop() {
   }
 
   DateTime _rtc = rtc.now();
+  Serial.println(_rtc.minute());
   int minutes = _rtc.minute();
   int hours = _rtc.hour();
   
@@ -45,6 +53,14 @@ void loop() {
 
   // Corresponding to on/off pins to LED of AM/PM
   bool isPM = hours >= 12;
+  if(hours > 11)
+  {
+    hours -= 11;
+  }
+  if(hours == 0)
+  {
+    hours = 12;
+  }
   
   // Corresponding to on/off pins to LEDs of hours (LSB at index 0)
   bool hour_pins[HOUR_PINS_COUNT];
@@ -79,7 +95,6 @@ void setPins(bool isPM, bool hour_pins[], bool minute_pins[]){
   {
     if(minute_pins[i])
     {
-      Serial.println(MINUTE_PIN_START+i);
       digitalWrite(MINUTE_PIN_START+i, HIGH);
     }
   }
