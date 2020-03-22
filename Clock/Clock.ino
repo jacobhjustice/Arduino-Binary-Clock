@@ -14,7 +14,6 @@ void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.println("Hello World!");
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   if (! rtc.begin()) 
   {
     Serial.println("RTC Not found");
