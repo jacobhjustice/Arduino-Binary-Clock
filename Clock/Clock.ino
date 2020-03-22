@@ -3,8 +3,8 @@
 const unsigned int MINUTE_PINS_COUNT = 6;
 const unsigned int HOUR_PINS_COUNT = 4;
 const unsigned int MINUTE_PIN_START = 2;
-const unsigned int HOUR_PIN_START= 8;
-const unsigned int PM_PIN = 13;
+const unsigned int HOUR_PIN_START= 10;
+const unsigned int PM_PIN = 9;
 const unsigned int MAX_PIN = 13;
 
 bool _isEnabled = false;
@@ -14,6 +14,7 @@ void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.println("Hello World!");
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   if (! rtc.begin()) 
   {
     Serial.println("RTC Not found");
@@ -38,10 +39,13 @@ void loop() {
     return;
   }
 
+  Serial.println("Iteration!");
   DateTime _rtc = rtc.now();
   Serial.println(_rtc.minute());
+  Serial.println(_rtc.hour());
   int minutes = _rtc.minute();
   int hours = _rtc.hour();
+  
   
   // Corresponding to on/off pins to LEDs of minutes (LSB at index 0)
   bool minute_pins[MINUTE_PINS_COUNT];
@@ -52,32 +56,26 @@ void loop() {
   }
 
   // Corresponding to on/off pins to LED of AM/PM
-  bool isPM = hours >= 12;
-  if(hours > 11)
+  bool isPM = hours > 12;
+  if(hours > 12)
   {
-    hours -= 11;
+    hours -= 12;
   }
-  if(hours == 0)
+  if(hours == 1)
   {
     hours = 12;
-  }
+  } 
   
   // Corresponding to on/off pins to LEDs of hours (LSB at index 0)
   bool hour_pins[HOUR_PINS_COUNT];
   for(int i = 0; i < HOUR_PINS_COUNT; i++)
   {
-    hour_pins[i] = minutes % 2;
+    hour_pins[i] = hours % 2;
     hours /= 2;
   }
-  //for(int i = 0; i < 6; i++)
- // {
-  //    Serial.println(minute_pins[i]);
 
-  //}
   clearPins();
   setPins(isPM, hour_pins, minute_pins);
-    Serial.println("____");
-
 
   delay(1000);
   
@@ -97,5 +95,16 @@ void setPins(bool isPM, bool hour_pins[], bool minute_pins[]){
     {
       digitalWrite(MINUTE_PIN_START+i, HIGH);
     }
+  }
+  for(int i = 0; i < HOUR_PINS_COUNT; i++)
+  {
+    if(hour_pins[i])
+    {
+      digitalWrite(HOUR_PIN_START+i, HIGH);
+    }
+  }
+  if(isPM)
+  {
+    analogWrite(PM_PIN, 2);
   }
 }
