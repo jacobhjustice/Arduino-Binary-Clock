@@ -14,15 +14,23 @@ void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.println("Hello World!");
+
+  setAllPinsOn();
+  delay(3000);
+  clearPins();
+
   if (! rtc.begin()) 
   {
-    Serial.println("RTC Not found");
+    Serial.println("RTC Not found.");
     while(1);
   }
   else if (rtc.lostPower()) 
   {
-    Serial.println("RTC Lost power");
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    Serial.println("RTC Lost power.");
+    resetRTC();
+    setPinsWarningAlert();
+    delay(3000);
+    clearPins();
     _isEnabled = true;
   }
   else 
@@ -106,4 +114,43 @@ void setPins(bool isPM, bool hour_pins[], bool minute_pins[]){
   {
     analogWrite(PM_PIN, 2);
   }
+}
+
+void setAllPinsOn() {
+  bool minute_pins[MINUTE_PINS_COUNT];
+  for(int i = 0; i < MINUTE_PINS_COUNT; i++)
+  {
+    minute_pins[i] = true;
+  }
+
+  // Corresponding to on/off pins to LEDs of hours (LSB at index 0)
+  bool hour_pins[HOUR_PINS_COUNT];
+  for(int i = 0; i < HOUR_PINS_COUNT; i++)
+  {
+    hour_pins[i] = true;
+  }
+
+  setPins(true, hour_pins, minute_pins);
+}
+
+void setPinsWarningAlert() {
+  bool minute_pins[MINUTE_PINS_COUNT];
+  for(int i = 0; i < MINUTE_PINS_COUNT; i++)
+  {
+    minute_pins[i] = false;
+  }
+
+  // Corresponding to on/off pins to LEDs of hours (LSB at index 0)
+  bool hour_pins[HOUR_PINS_COUNT];
+  for(int i = 0; i < HOUR_PINS_COUNT; i++)
+  {
+    hour_pins[i] = true;
+  }
+
+  setPins(true, hour_pins, minute_pins);
+}
+
+void resetRTC()
+{
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
