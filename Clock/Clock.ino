@@ -3,8 +3,8 @@
 const unsigned int MINUTE_PINS_COUNT = 6;
 const unsigned int HOUR_PINS_COUNT = 4;
 const unsigned int MINUTE_PIN_START = 2;
-const unsigned int HOUR_PIN_START= 10;
-const unsigned int PM_PIN = 9;
+const unsigned int HOUR_PIN_START= 9;
+const unsigned int PM_PIN = 8;
 const unsigned int MAX_PIN = 13;
 
 bool _isEnabled = false;
@@ -18,7 +18,6 @@ void setup() {
   setAllPinsOn();
   delay(3000);
   clearPins();
-
   if (! rtc.begin()) 
   {
     Serial.println("RTC Not found.");
@@ -68,7 +67,7 @@ void loop() {
   {
     hours -= 12;
   }
-  if(hours == 1)
+  if(hours == 0)
   {
     hours = 12;
   } 
@@ -112,7 +111,8 @@ void setPins(bool isPM, bool hour_pins[], bool minute_pins[]){
   }
   if(isPM)
   {
-    analogWrite(PM_PIN, 2);
+    digitalWrite(PM_PIN, HIGH);
+    //analogWrite(PM_PIN, 2);
   }
 }
 

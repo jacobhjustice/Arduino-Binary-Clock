@@ -17,3 +17,5 @@
 4) Create a box to hold the clock (I used wood for this, but could use cardboard, foam, etc), drill/cut holes to fit the LEDs in whatever form you want/what makes sense to you
 5) Install your circuit into your box and voila 
 
+![Image 1](clock_1.jpg)
+![Image 2](clock_2.jpg)
